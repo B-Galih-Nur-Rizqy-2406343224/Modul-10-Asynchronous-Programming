@@ -75,3 +75,15 @@ Ketiga, teks "Hi there!" di daftar user diganti menjadi "● Online" berwarna hi
 Perubahan ini tidak mengubah logika komunikasi sama sekali — hanya menyentuh layer presentasi di `chat.rs` dan `login.rs`. Ini menunjukkan salah satu keunggulan arsitektur komponen Yew: UI bisa dimodifikasi bebas tanpa menyentuh lapisan service atau state management.
 
 ![Experiment 3.2 - Tampilan GalihChat setelah modifikasi](docs/img/3-2.png)
+
+## Bonus: Rust Websocket server for YewChat!
+
+Server Tutorial 2 yang semula hanya membroadcast teks mentah dimodifikasi agar bisa melayani YewChat. Perubahan utamanya ada tiga: menambahkan `serde` dan `serde_json` ke dependensi, menambahkan struct `IncomingMessage` dan `OutgoingMessage` untuk parsing/serialisasi JSON, dan menambahkan `Arc<Mutex<HashMap<SocketAddr, String>>>` untuk menyimpan mapping antara alamat koneksi dan username masing-masing client.
+
+Ketika client YewChat mengirim pesan `register`, server menyimpan username-nya ke dalam map lalu mem-broadcast daftar user aktif ke semua client dalam format `{"messageType":"users","dataArray":["user1","user2"]}`. Ketika pesan `message` diterima, server mencari username pengirim dari map, menyisipkan timestamp dari `SystemTime::now()`, lalu mem-broadcast dalam format yang diharapkan YewChat. Ketika koneksi terputus, entry dihapus dari map dan daftar user di-broadcast ulang.
+
+Perubahan ini berhasil karena YewChat hanya peduli pada format pesan JSON dan port WebSocket (`ws://127.0.0.1:8080`), ia tidak peduli apakah server di belakangnya ditulis dalam JavaScript atau Rust. Selama format JSON-nya cocok, koneksi berjalan normal.
+
+Dari sisi preferensi pribadi, versi Rust lebih menarik karena type system-nya memaksa semua struktur pesan didefinisikan secara eksplisit melalui `#[derive(Serialize, Deserialize)]`. Kesalahan format pesan akan tertangkap saat compile time, bukan saat runtime. Versi JavaScript lebih cepat untuk prototipe karena tidak perlu mendefinisikan tipe, tapi itu justru membuatnya lebih rentan terhadap bug yang hanya muncul saat production.
+
+![Bonus - Rust server melayani YewChat](docs/img/bonus.png)

@@ -19,7 +19,7 @@ async fn main() -> Result<(), tokio_websockets::Error> {
             incoming = ws_stream.next() => {
                 match incoming {
                     Some(Ok(msg)) if msg.is_text() => {
-                        println!("From server: {}", msg.as_text().unwrap());
+                        println!("Galih's Computer - From server: {}", msg.as_text().unwrap());
                     }
                     Some(Ok(_)) => {}
                     Some(Err(e)) => return Err(e),

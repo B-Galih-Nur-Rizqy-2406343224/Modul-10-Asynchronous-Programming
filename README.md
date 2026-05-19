@@ -45,3 +45,15 @@ Kedua sisi harus diubah karena koneksi WebSocket bersifat client-server, port ya
 Protokol yang digunakan tetap sama yaitu `ws://` (WebSocket tanpa enkripsi). Protokol ini didefinisikan di sisi client pada URI yang diteruskan ke `ClientBuilder::from_uri()`, sedangkan di sisi server tidak perlu mendefinisikan protokol secara eksplisit karena `TcpListener` bekerja di layer TCP dan `ServerBuilder` dari tokio-websockets yang menangani handshake WebSocket di atasnya.
 
 Setelah perubahan ini, aplikasi tetap berjalan normal, server mencetak "listening on port 8080" dan client berhasil terhubung, membuktikan bahwa port hanyalah angka identifier dan tidak mempengaruhi perilaku aplikasi.
+
+## Experiment 2.3: Small changes, add IP and Port
+
+Modifikasi dilakukan di dua tempat. Di `server.rs`, pesan yang di-broadcast diubah dari teks mentah menjadi `format!("{addr}: {text}")` sehingga setiap pesan yang diterima client sudah menyertakan IP dan port pengirimnya. Di `client.rs`, output ketika menerima pesan ditambahkan prefiks `"Galih's Computer - From server: "` agar jelas pesan tersebut datang dari server dan siapa yang menerimanya.
+
+Sebelum modifikasi ini, kalau dua client mengirim pesan bersamaan, penerima tidak bisa tahu siapa yang mengirim karena pesan tampil sebagai teks polos tanpa identitas. Dengan menambahkan addr pengirim di server sebelum broadcast, informasi ini ikut dikirim ke semua penerima tanpa perlu modifikasi tambahan di sisi client.
+
+Pendekatan ini masuk akal karena server-lah yang tahu `SocketAddr` dari setiap koneksi — client tidak punya informasi tersebut. Jadi server menjadi satu-satunya tempat yang tepat untuk menyisipkan informasi pengirim ke dalam pesan sebelum disebarkan.
+
+Hasilnya di konsol client terlihat seperti `"Galih's Computer - From server: 127.0.0.1:56394: Test Client 1"`, di mana `127.0.0.1:56394` adalah identitas pengirim pesan tersebut.
+
+![Experiment 2.3 - Pesan dengan info IP dan Port](docs/img/2-3.png)

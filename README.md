@@ -35,3 +35,13 @@ Mekanisme ini bekerja dengan `tokio::broadcast::channel`: setiap client punya sa
 WebSocket dipilih sebagai protokol transport karena sifatnya yang full-duplex, server dan client bisa saling mengirim kapan saja tanpa menunggu giliran, berbeda dengan HTTP biasa yang request-response. Ini sangat cocok untuk aplikasi chat real-time.
 
 ![Experiment 2.1 - Server dan tiga client](docs/img/2-1.png)
+
+## Experiment 2.2: Modifying port
+
+Port diubah dari 2000 ke 8080 dengan memodifikasi dua file sekaligus: `server.rs` dan `client.rs`. Di `server.rs`, baris `TcpListener::bind("127.0.0.1:2000")` diubah menjadi `"127.0.0.1:8080"`. Di `client.rs`, URI koneksi `ws://127.0.0.1:2000` diubah menjadi `ws://127.0.0.1:8080`.
+
+Kedua sisi harus diubah karena koneksi WebSocket bersifat client-server, port yang didengarkan server harus sama persis dengan port yang dituju client. Kalau hanya salah satu yang diubah, client akan gagal terhubung dengan error "connection refused".
+
+Protokol yang digunakan tetap sama yaitu `ws://` (WebSocket tanpa enkripsi). Protokol ini didefinisikan di sisi client pada URI yang diteruskan ke `ClientBuilder::from_uri()`, sedangkan di sisi server tidak perlu mendefinisikan protokol secara eksplisit karena `TcpListener` bekerja di layer TCP dan `ServerBuilder` dari tokio-websockets yang menangani handshake WebSocket di atasnya.
+
+Setelah perubahan ini, aplikasi tetap berjalan normal, server mencetak "listening on port 8080" dan client berhasil terhubung, membuktikan bahwa port hanyalah angka identifier dan tidak mempengaruhi perilaku aplikasi.

@@ -23,3 +23,15 @@ Jadi peran masing-masing komponen: **spawner** mendaftarkan task ke antrian, **e
 ![Hasil eksekusi Experiment 1.3 — dengan drop](docs/img/1-3a.png)
 
 ![Hasil eksekusi Experiment 1.3 — tanpa drop (program hang)](docs/img/1-3b.png)
+
+## Experiment 2.1: Original code, and how it run
+
+Kode broadcast chat ini diambil dari *Google Comprehensive Rust* dan dijalankan dengan satu server dan tiga client secara bersamaan. Cara menjalankannya: buka satu terminal untuk server dengan `cargo run --bin server`, lalu buka tiga terminal terpisah masing-masing untuk client dengan `cargo run --bin client`.
+
+Ketika client terhubung, server langsung mengirim pesan sambutan "Welcome to chat! Type a message". Setelah itu, teks apapun yang diketik di salah satu client akan dikirim ke server sebagai WebSocket message, lalu server mem-broadcast pesan tersebut ke semua client yang sedang terhubung, termasuk pengirimnya sendiri.
+
+Mekanisme ini bekerja dengan `tokio::broadcast::channel`: setiap client punya satu `Sender` (dikloning dari channel utama) dan satu `Receiver` (didapat dari `subscribe()`). Di dalam `handle_connection`, `tokio::select!` dipakai untuk secara bersamaan menunggu dua hal: pesan masuk dari client via WebSocket, dan pesan broadcast dari client lain via channel. Ini adalah pola konkurensi async yang efisien karena tidak membutuhkan thread terpisah per client.
+
+WebSocket dipilih sebagai protokol transport karena sifatnya yang full-duplex, server dan client bisa saling mengirim kapan saja tanpa menunggu giliran, berbeda dengan HTTP biasa yang request-response. Ini sangat cocok untuk aplikasi chat real-time.
+
+![Experiment 2.1 - Server dan tiga client](docs/img/2-1.png)

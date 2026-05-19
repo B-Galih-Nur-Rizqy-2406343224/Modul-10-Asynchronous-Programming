@@ -57,3 +57,11 @@ Pendekatan ini masuk akal karena server-lah yang tahu `SocketAddr` dari setiap k
 Hasilnya di konsol client terlihat seperti `"Galih's Computer - From server: 127.0.0.1:56394: Test Client 1"`, di mana `127.0.0.1:56394` adalah identitas pengirim pesan tersebut.
 
 ![Experiment 2.3 - Pesan dengan info IP dan Port](docs/img/2-3.png)
+
+## Experiment 3.1: Original code
+
+Cara menjalankan: nyalakan server dulu dengan `npm start` di folder `tutorial-3/server`, lalu jalankan client dengan `npm start` di folder `tutorial-3`. Browser otomatis terbuka di `localhost:8000` menampilkan halaman login dengan input username dan tombol "GO CHATTING!".
+
+Setelah masuk, muncul tampilan chat dengan daftar user aktif di panel kiri dan area percakapan di kanan. Setiap pesan yang dikirim langsung muncul di semua tab yang sedang terhubung karena server mem-broadcast ke semua client. Komunikasi menggunakan format JSON dengan tiga jenis pesan: `register` saat user masuk, `message` untuk pesan chat, dan `users` untuk update daftar user aktif. Ini berbeda dari Tutorial 2 yang hanya mengirim teks polos, sehingga UI bisa menampilkan nama pengirim dan avatar secara terpisah.
+
+![Experiment 3.1 - YewChat berjalan dengan dua user](docs/img/3-1.png)

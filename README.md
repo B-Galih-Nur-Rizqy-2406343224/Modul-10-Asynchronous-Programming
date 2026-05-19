@@ -65,3 +65,13 @@ Cara menjalankan: nyalakan server dulu dengan `npm start` di folder `tutorial-3/
 Setelah masuk, muncul tampilan chat dengan daftar user aktif di panel kiri dan area percakapan di kanan. Setiap pesan yang dikirim langsung muncul di semua tab yang sedang terhubung karena server mem-broadcast ke semua client. Komunikasi menggunakan format JSON dengan tiga jenis pesan: `register` saat user masuk, `message` untuk pesan chat, dan `users` untuk update daftar user aktif. Ini berbeda dari Tutorial 2 yang hanya mengirim teks polos, sehingga UI bisa menampilkan nama pengirim dan avatar secara terpisah.
 
 ![Experiment 3.1 - YewChat berjalan dengan dua user](docs/img/3-1.png)
+
+## Experiment 3.2: Be Creative!
+
+Ada empat modifikasi yang dilakukan pada tampilan YewChat. Pertama, login page diubah dari background abu-abu gelap menjadi indigo gelap, dilengkapi judul besar "💬 GalihChat" dan tagline "Real-time chat, powered by Rust & WebAssembly" agar identitas aplikasi lebih kuat. Kedua, header chat page juga menggunakan branding yang sama dengan tagline, sehingga konsisten di seluruh halaman.
+
+Ketiga, teks "Hi there!" di daftar user diganti menjadi "● Online" berwarna hijau untuk memberi informasi status yang lebih bermakna — user yang muncul di list memang sedang aktif, jadi lebih jujur daripada placeholder generik. Keempat, setiap chat bubble kini menampilkan timestamp dalam format `HH:MM UTC` di bawah isi pesan, dihitung dari field `time` yang sudah dikirim server namun sebelumnya tidak ditampilkan di UI.
+
+Perubahan ini tidak mengubah logika komunikasi sama sekali — hanya menyentuh layer presentasi di `chat.rs` dan `login.rs`. Ini menunjukkan salah satu keunggulan arsitektur komponen Yew: UI bisa dimodifikasi bebas tanpa menyentuh lapisan service atau state management.
+
+![Experiment 3.2 - Tampilan GalihChat setelah modifikasi](docs/img/3-2.png)
